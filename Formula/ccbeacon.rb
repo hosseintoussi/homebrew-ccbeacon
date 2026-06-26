@@ -16,8 +16,8 @@ class Ccbeacon < Formula
   end
 
   def post_install
-    home       = Pathname.new(ENV["HOME"])
-    hooks_dir  = home/".claude/hooks"
+    home      = Pathname.new(ENV["HOME"])
+    hooks_dir = home/".claude/hooks"
     hooks_dir.mkpath
 
     # Install/update the hook script
@@ -38,22 +38,43 @@ class Ccbeacon < Formula
       settings["hooks"][event] ||= []
       cmd   = "#{hooks_dir}/ccbeacon.sh #{state}"
       entry = { "hooks" => [{ "type" => "command", "command" => cmd }] }
-      # Idempotent — skip if a ccbeacon entry already exists for this event
       next if settings["hooks"][event].any? { |h| h.to_s.include?("ccbeacon") }
       settings["hooks"][event] << entry
     end
 
     settings_path.write(JSON.pretty_generate(settings))
+
+    # Install LaunchAgent so ccbeacon starts at login automatically
+    launch_agents = home/"Library/LaunchAgents"
+    launch_agents.mkpath
+    plist = launch_agents/"com.hosseintoussi.ccbeacon.plist"
+    plist.write <<~XML
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>Label</key>
+        <string>com.hosseintoussi.ccbeacon</string>
+        <key>ProgramArguments</key>
+        <array>
+          <string>#{bin}/ccbeacon</string>
+        </array>
+        <key>RunAtLoad</key>
+        <true/>
+        <key>KeepAlive</key>
+        <false/>
+      </dict>
+      </plist>
+    XML
+
+    # Reload if already running (handles upgrades), otherwise start fresh
+    quiet_system "launchctl", "bootout", "gui/#{Process.uid}/com.hosseintoussi.ccbeacon"
+    system "launchctl", "bootstrap", "gui/#{Process.uid}", plist.to_s
   end
 
   def caveats
     <<~EOS
-      Hook script installed and Claude Code hooks configured automatically.
-
-      Launch ccbeacon:
-        ccbeacon &
-
-      To start at login: System Settings → General → Login Items → add ccbeacon.
+      ccbeacon is running and will start automatically at login.
     EOS
   end
 
