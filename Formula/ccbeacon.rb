@@ -5,7 +5,6 @@ class Ccbeacon < Formula
   sha256 "d720d8906917fd3989b19ee4d89ec1e34463cf4856955b13c44840b34e3c855a"
   license "MIT"
 
-  depends_on xcode: ["14.0", :build]
   depends_on :macos => :ventura
 
   def install
