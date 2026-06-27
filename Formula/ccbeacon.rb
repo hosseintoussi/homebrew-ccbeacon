@@ -3,8 +3,8 @@ require "json"
 class Ccbeacon < Formula
   desc "macOS menu bar monitor for Claude Code sessions"
   homepage "https://github.com/hosseintoussi/ccbeacon"
-  url "https://github.com/hosseintoussi/ccbeacon/archive/refs/tags/v2.0.5.tar.gz"
-  sha256 "43caa07b0a917ce7702b39105e85f866cb60d825abb99d3d6231762d8c42918b"
+  url "https://github.com/hosseintoussi/ccbeacon/archive/refs/tags/v2.0.6.tar.gz"
+  sha256 "d5d905bc7a9f0c3c0d0cb3b9c7483a33ee021d0381cf71c3abc1c396da763942"
   license "MIT"
 
   depends_on :macos => :ventura
