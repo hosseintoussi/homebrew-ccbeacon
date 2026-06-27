@@ -33,6 +33,8 @@ class Ccbeacon < Formula
     {
       "UserPromptSubmit" => [{ "hooks" => [{ "type" => "command", "command" => "#{hooks_dir}/ccbeacon.sh working" }] }],
       "Stop"             => [{ "hooks" => [{ "type" => "command", "command" => "#{hooks_dir}/ccbeacon.sh done"    }] }],
+      "StopFailure"      => [{ "hooks" => [{ "type" => "command", "command" => "#{hooks_dir}/ccbeacon.sh done"    }] }],
+      "SessionEnd"       => [{ "hooks" => [{ "type" => "command", "command" => "#{hooks_dir}/ccbeacon.sh done"    }] }],
       "Notification"     => [
         { "matcher" => "permission_prompt",  "hooks" => [{ "type" => "command", "command" => "#{hooks_dir}/ccbeacon.sh waiting" }] },
         { "matcher" => "elicitation_dialog", "hooks" => [{ "type" => "command", "command" => "#{hooks_dir}/ccbeacon.sh waiting" }] },
