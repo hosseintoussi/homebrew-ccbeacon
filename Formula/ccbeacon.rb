@@ -31,15 +31,16 @@ class Ccbeacon < Formula
     settings["hooks"] ||= {}
 
     {
-      "UserPromptSubmit" => "working",
-      "Notification"     => "waiting",
-      "Stop"             => "done",
-    }.each do |event, state|
+      "UserPromptSubmit" => [{ "hooks" => [{ "type" => "command", "command" => "#{hooks_dir}/ccbeacon.sh working" }] }],
+      "Stop"             => [{ "hooks" => [{ "type" => "command", "command" => "#{hooks_dir}/ccbeacon.sh done"    }] }],
+      "Notification"     => [
+        { "matcher" => "permission_prompt",  "hooks" => [{ "type" => "command", "command" => "#{hooks_dir}/ccbeacon.sh waiting" }] },
+        { "matcher" => "elicitation_dialog", "hooks" => [{ "type" => "command", "command" => "#{hooks_dir}/ccbeacon.sh waiting" }] },
+      ],
+    }.each do |event, entries|
       settings["hooks"][event] ||= []
-      cmd   = "#{hooks_dir}/ccbeacon.sh #{state}"
-      entry = { "hooks" => [{ "type" => "command", "command" => cmd }] }
       next if settings["hooks"][event].any? { |h| h.to_s.include?("ccbeacon") }
-      settings["hooks"][event] << entry
+      settings["hooks"][event].concat(entries)
     end
 
     settings_path.write(JSON.pretty_generate(settings))
